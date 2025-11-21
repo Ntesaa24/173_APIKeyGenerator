@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard Admin: User & API Key</title>
+
+<style>
+    body {
+        font-family: 'Poppins', sans-serif;
+        background: #ffe6f0;
+        padding: 40px 60px;
+        margin: 0;
+        color: #444;
+    }
+
+    h1 {
+        text-align: center;
+        color: #d81b60;
+        margin-bottom: 30px;
+        font-size: 28px;
+    }
+
+    h2 {
+        margin-top: 40px;
+        margin-bottom: 10px;
+        color: #d81b60;
+        border-left: 6px solid #f48fb1;
+        padding-left: 12px;
+        font-size: 22px;
+    }
+
+    /* TABLE STYLE FIX */
+    table {
+        width: 100%;
+        border-collapse: separate;
+        border-spacing: 0;
+        margin-top: 15px;
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+    }
+
+    th {
+        background: #f7a7bf;
+        color: white;
+        padding: 14px;
+        font-size: 15px;
+        text-align: left;
+        border-bottom: 2px solid #ffccdd;
+    }
+
+    td {
+        padding: 14px;
+        border-bottom: 1px solid #ffe5ef;
+        font-size: 14px;
+    }
+
+    tr:last-child td {
+        border-bottom: none;
+    }
+
+    tr:nth-child(even) {
+        background: #fff5fa;
+    }
+
+    .status-online {
+        color: green;
+        font-weight: bold;
+    }
+
+    .status-offline {
+        color: red;
+        font-weight: bold;
+    }
+</style>
+</head>
+
+<body>
+
+<h1>Dashboard Admin: Daftar User & API Key</h1>
+
+<h2>Daftar User</h2>
+<table id="userTable">
+    <thead>
+        <tr>
+            <th style="width: 80px;">ID User</th>
+            <th style="width: 160px;">Nama Depan</th>
+            <th style="width: 160px;">Nama Belakang</th>
+            <th style="width: 240px;">Email</th>
+            <th style="width: 350px;">API Key</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<h2>Daftar API Key</h2>
+<table id="keyTable">
+    <thead>
+        <tr>
+            <th style="width: 80px;">ID</th>
+            <th style="width: 350px;">API Key</th>
+            <th style="width: 200px;">Out of Date</th>
+            <th style="width: 150px;">Status Key</th>
+        </tr>
+    </thead>
+    <tbody></tbody>
+</table>
+
+<script>
+async function loadDashboard() {
+    const res = await fetch('/dashboard-data');
+    const data = await res.json();
+
+    if (!data.success) {
+        alert("Gagal memuat data dashboard");
+        return;
+    }
+
+    // === USER TABLE ===
+    const userBody = document.querySelector("#userTable tbody");
+    userBody.innerHTML = "";
+    data.users.forEach(u => {
+        userBody.innerHTML += `
+            <tr>
+                <td>${u.id}</td>
+                <td>${u.first_name}</td>
+                <td>${u.last_name}</td>
+                <td>${u.email}</td>
+                <td>${u.apikey_id}</td>
+            </tr>
+        `;
+    });
+
+    // === API KEY TABLE ===
+    const keyBody = document.querySelector("#keyTable tbody");
+    keyBody.innerHTML = "";
+    data.apikeys.forEach(k => {
+        keyBody.innerHTML += `
+            <tr>
+                <td>${k.id}</td>
+                <td>${k.key}</td>
+                <td>${k.out_of_date}</td>
+                <td class="${k.status === 'Aktif' ? 'status-online' : 'status-offline'}">
+                    ${k.status}
+                </td>
+            </tr>
+        `;
+    });
+}
+
+loadDashboard();
+</script>
+
+</body>
+</html>
